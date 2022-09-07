@@ -33,7 +33,7 @@ Specifically, we use ASM to identify all the event handlers declared in Android 
 In this step, we instrument the app at all the methods of the event signature (the instrumentation strategy is similar to step 1). In this way, we get the final instrumented app. When a testing tool is running against the instrumented app, we can easily extract the event signatures from the log to determine which UI events have been executed. Compared to the fully instrumented app in step 1, we can focus on the only relevant methods of the target bug, which simplifies the workload of obtaining the event traces for automata-based trace analysis.
 
 
-## Guide of DDroid-instrumentor
+## Guide of using DDroid-instrumentor
 
 The directory structure of DDroid-instrumentor is as follows:
 ```
