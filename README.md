@@ -22,7 +22,7 @@ In this step, we extract the executed methods within *an event handler*, and use
 
 For example, ``OnOptionsItemSelected(...)`` is a typical event handler method to implement a menu. Let an event ``e`` be the action to select a menu item, its method call chain could be:
 
-``call`` OnOptionsItemSelected( )-->``call`` m1( )-->``call`` m2( )-->``return`` m2( )-->``return`` m1( )-->``return`` OnOptionsItemSelected( )
+``entry`` OnOptionsItemSelected(...)-->``entry`` m1(...)-->``entry`` m2(...)-->``exit`` m2(...)-->``exit`` m1(...)-->``exit`` OnOptionsItemSelected(...)
 
 The preceding method call sequence is the event signature that can uniquely identify the event ``e``.
 
