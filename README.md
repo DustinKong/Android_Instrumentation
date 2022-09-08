@@ -8,7 +8,7 @@ In our work, DDroid-instrumentor is used to instrument the apps from [Themis](ht
 
 Fig. 1 shows DDroid-instrumentor's workflow.
 
-![Fig 1](https://github.com/liuhuiyu991026/Resource/blob/master/images/Fig1-2.png)
+![Fig 1](https://github.com/DDroid-Android/Android_Instrumentation/blob/main/Fig1.png)
 
 ### Step (1): Fully instrumentation 
 Given an app, we automatically instrument all the class methods to obtain an instrumented app. Specifically, we get the ``.class`` files through Gradle Transformer and our custom Gradle plugin, and use ASM to traverse all the ``.class`` files and insert customized functions at the entry and exits of each method. 
