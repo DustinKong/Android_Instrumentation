@@ -4,7 +4,7 @@
 ## Introduction
 DDroid-instrumentor is an automated instrumentation tool for Android apps. It is built on [ASM](https://asm.ow2.io/) and [Gradle Transformer](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/transform/Transform) to automatically instrument apps at the event handlers to uniquely log executed UI events. Specifically, ASM is an all purpose Java bytecode manipulation and analysis framework, which can modify existing classes or dynamically generate classes in the binary form. 
 
-In our work, DDroid-instrumentor is used to instrument the apps from [Themis](https://github.com/the-themis-benchmarks), the representative benchmark with diverse types of real-world bugs for Android. 
+In our work, DDroid-instrumentor is used to instrument the apps from [Themis](https://github.com/the-themis-benchmarks), a representative benchmark with diverse types of real-world bugs for Android. 
 
 Fig. 1 shows DDroid-instrumentor's workflow.
 
@@ -20,13 +20,13 @@ The customized functions log the executed methods (including the entry and exits
 ### Step (3): Filtering the event signature
 In this step, we extract the executed methods within *an event handler*, and use the sequence of executed methods as *an event signature*. In Android, the event handling methods are used to handle user events. Thus, the event signature can uniquely identify the executed UI events from the log obtained in Step (2). 
 
-For example, ``OnOptionsItemSelected(...)`` is a typical event handler method to implement a menu. Let an event ``e`` be the action to select a menu item, its method call chain could be:
+For example, ``OnOptionsItemSelected(...)`` is a typical event handler method to implement an option menu. Let an event ``e`` be the user event to select a menu item, its method call chain could be:
 
 ``entry`` OnOptionsItemSelected(...)-->``entry`` m1(...)-->``entry`` m2(...)-->``exit`` m2(...)-->``exit`` m1(...)-->``exit`` OnOptionsItemSelected(...)
 
 The preceding method call sequence is the event signature that can uniquely identify the event ``e``.
 
-Specifically, we use ASM to identify all the event handlers declared in Android SDK and Android Support Library, and filter the log from step (2) to obtain the executed methods within an event handler.  
+Specifically, we use ASM to identify the method names of *all* the event handlers declared in Android SDK and Android Support Library, and filter the log from step (2) to obtain the executed methods within an event handler.  
 
 
 ### Step (4): Instrument the app by the event signature 
