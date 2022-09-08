@@ -82,6 +82,7 @@ AsmPlugin
 │                    com.asm.gradle.properties:	# explicit plugin's implementation-class
 │                          
 ```
+In order to complete the Step(1) automated instrumentation process in the workflow, the custom Gradle plugin implemented in DDroid-instrumentor needs to be implanted into the source code of the app. Specifically, the following steps are required.
 ### step 0. Preparation
 You need to prepare an app with source code and know the Gradle version and AGP version of the app.
 
@@ -98,8 +99,7 @@ dependencies {
 	implementation 'com.android.tools.build:gradle:3.5.0'
 }
 ```
-Don't forget to run Gradle Task **_UploadArchives_** to refresh your plugin.<br>
-<br>
+
 Second, add the package **_realtimecoverage_** to the source project of the app that needs to be instrumented, and preferably you can add it to **_app/src/main/java_**. Then find the Launch Activity of your app according to _AndroidMenifest.xml_, and insert some code into **_onCreate()_** method of your Launch Activity like the following snippet.
 ``` java
 protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +111,11 @@ protected void onCreate(Bundle savedInstanceState) {
 	crashHandler.init(getApplicationContext());
 	...
 }
+```
+
+Then, do the following to generate the plugin.
+```
+./gradlew asm-method-plugin:uploadArchives
 ```
 ### step 3. Modify Configurations
 First, you need to import this plugin to the project-level build.gradle like the following snippet.
@@ -136,7 +141,12 @@ Second, you need to apply this plugin to the app-level build.gradle like the fol
 apply plugin: 'com.asm.gradle'
 ```
 
-Note you need to make sure the app project can be successfully compiled.
+Then, do the following to generate the instrumented app's apk, and you can get the required apk in the ```project_name/module_name/build/outputs/apk/``` directory.
+```
+./gradlew tasks
+./gradlew assembleDebug
+```
+
 
 
 </font>
