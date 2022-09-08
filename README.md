@@ -82,9 +82,11 @@ AsmPlugin
 │                    com.asm.gradle.properties:	# explicit plugin's implementation-class
 │                          
 ```
-In order to complete the Step(1) automated instrumentation process in the workflow, the custom Gradle plugin implemented in DDroid-instrumentor needs to be implanted into the source code of the app. Specifically, the following steps are required.
+
+Specifically, DDroid-instrumentor requires the following steps to enable the app instrumentation.
+
 ### step 0. Preparation
-You need to prepare an app with source code and know the Gradle version and AGP version of the app.
+You need to obtain the app source code and the Gradle version and AGP version of the app.
 
 ### step 1. Import Plugin
 You can import the module **_asm-method-plugin_** into your app project, or you can create a new module in your project according to the above directory of module **_asm-method-plugin_**.
@@ -117,7 +119,7 @@ Then, do the following to generate the plugin.
 ```
 ./gradlew asm-method-plugin:uploadArchives
 ```
-### step 3. Modify Configurations
+### step 3. Modify ``build.gradle``
 First, you need to import this plugin to the project-level build.gradle like the following snippet.
 ``` gradle
 buildscript {
@@ -141,7 +143,8 @@ Second, you need to apply this plugin to the app-level build.gradle like the fol
 apply plugin: 'com.asm.gradle'
 ```
 
-Then, do the following to generate the instrumented app's apk, and you can get the required apk in the ```project_name/module_name/build/outputs/apk/``` directory.
+Then, you can run the commands below to generate the instrumented app (located in the directory ```project_name/module_name/build/outputs/apk/```).
+
 ```
 ./gradlew tasks
 ./gradlew assembleDebug
