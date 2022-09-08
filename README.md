@@ -8,7 +8,7 @@ In our work, DDroid-instrumentor is used to instrument the apps from [Themis](ht
 
 Fig. 1 shows DDroid-instrumentor's workflow.
 
-![Fig 1](https://github.com/liuhuiyu991026/Resource/blob/master/images/Fig1.png)
+![Fig 1](https://github.com/liuhuiyu991026/Resource/blob/master/images/Fig1-2.png)
 
 ### Step (1): Fully instrumentation 
 Given an app, we automatically instrument all the class methods to obtain an instrumented app. Specifically, we get the ``.class`` files through Gradle Transformer and our custom Gradle plugin, and use ASM to traverse all the ``.class`` files and insert customized functions at the entry and exits of each method. 
@@ -58,7 +58,7 @@ AsmPlugin
 │              └─realtimecoverage
 │                      CrashHandler.java:	# implement an interface handing uncaught exception
 │                      MethodVisitor.java:	# implement custom functions need to be inserted
-│                      RealtimeCoverage.java:	# implement BlockingQueue to monitor method calls and returns
+│                      RealtimeCoverage.java:	# implement BlockingQueue to monitor the entry and exits of methods
 │                      
 ├─asm-method-plugin
 │  │  
