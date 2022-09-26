@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 
 public class Main {
-
     public static final String IS_ANDROID = "^android";
     public static final String IS_LISTENER = ".*Listener$|android/app/Activity$";
     private final static int[] Android_API_Levels = new int[]{19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30};
