@@ -1,5 +1,5 @@
 # DDroid-instrumentor
-<font face='Times New Roman' size=4>
+<font face='Times New Roman' size=5>
 
 ## Introduction
 DDroid-instrumentor is an automated instrumentation tool for Android apps. It is built on [ASM](https://asm.ow2.io/) and [Gradle Transformer](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/transform/Transform) to automatically instrument apps at the event handlers to uniquely log executed UI events. Specifically, ASM is an all purpose Java bytecode manipulation and analysis framework, which can modify existing classes or dynamically generate classes in the binary form. 
