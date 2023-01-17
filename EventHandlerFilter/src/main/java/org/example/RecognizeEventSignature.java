@@ -81,7 +81,7 @@ public class RecognizeEventSignature {
 
     public static void main(String[] args) {
         String jsonFilePath = "event_signature.json";
-        String logFilePath = "coverage.txt";
+        String logFilePath = "coverage2.txt";
         recognizeLogFile(jsonFilePath, logFilePath);
     }
 }

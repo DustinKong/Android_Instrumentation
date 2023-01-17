@@ -8,12 +8,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Initialize the blocking queue of Method-Call-Listener
-        realtimecoverage.RealtimeCoverage.init();
         super.onCreate(savedInstanceState);
-        // Set an interface for handlers invoked when a Thread abruptly terminates due to an uncaught exception
-        realtimecoverage.CrashHandler crashHandler = realtimecoverage.CrashHandler.getInstance();
-        crashHandler.init(getApplicationContext());
         setContentView(R.layout.activity_main);
     }
 

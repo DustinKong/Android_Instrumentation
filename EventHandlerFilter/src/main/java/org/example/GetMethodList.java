@@ -12,7 +12,7 @@ import java.util.*;
 
 public class GetMethodList {
     public static Set<String> s = new HashSet<>();
-    public static final String APP_PACKAGE_NAME = "com/ichi2/anki";
+    public static final String APP_PACKAGE_NAME = "com/amaze/filemanager";
     public static final String NOT_HANDLER_METHOD = "onCreate|onStart|onResume|onPause|onStop|onDestroy|onSaveInstanceState|onPreExecute|onPostExecute|onLoadFinished|onBindViewHolder|onAttachedToWindow|onProgressUpdate|onActivityResult";
 
     public static void readTxt(String filePath) {
@@ -36,18 +36,30 @@ public class GetMethodList {
                     List<String> methodChain = null;
                     while ((line = bufferedReader.readLine()) != null) {
                         String methodName = line.substring(line.lastIndexOf("/") + 1);
-                        if(methodName.matches(NOT_HANDLER_METHOD)){
-                            continue;
-                        }
-                        if (!tag && methodName.startsWith("on")){
-                            String sql = "select * from event_handler_method where name='" + methodName + "' and name not like '%on%Create%'";
-                            ResultSet rs = stmt.executeQuery(sql);
-                            if (line.startsWith(APP_PACKAGE_NAME) && rs.next()) {
+//                        if(methodName.matches(NOT_HANDLER_METHOD)){
+//                            continue;
+//                        }
+                        String special = "com/ichi2/anki/NavigationDrawerActivity\\$4/run|com/amaze/filemanager/ui/views/appbar/SearchView/lambda\\$new\\$2";
+                        if (!tag){
+//                            String sql = "select * from event_handler_method where name='" + methodName + "' and name not like '%on%Create%'";
+                            if(methodName.startsWith("on") || methodName.equals("afterTextChanged") || methodName.equals("verseLongPress")){
+                                String sql = "select * from themis_method where name='" + methodName + "'";
+                                ResultSet rs = stmt.executeQuery(sql);
+
+                                if (line.startsWith(APP_PACKAGE_NAME) && rs.next()) {
+                                    tag = true;
+                                    head = line;
+                                    System.out.println("Now instrumenting：" + line);
+                                    methodChain = new LinkedList<>();
+                                }
+                            }
+                            else if(line.matches(special)){
                                 tag = true;
                                 head = line;
                                 System.out.println("Now instrumenting：" + line);
                                 methodChain = new LinkedList<>();
                             }
+
                         }
                         if (tag) {
                             methodChain.add(line);

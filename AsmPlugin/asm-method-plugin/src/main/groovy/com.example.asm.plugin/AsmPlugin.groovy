@@ -9,9 +9,16 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.Opcodes;
+import com.example.asm.plugin.Utils
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -24,7 +31,7 @@ class AsmPlugin extends Transform implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        // Register Transform
+        //registerTransform
         println '-------register transform---------'
         def android = project.extensions.getByType(AppExtension)
         android.registerTransform(this)
@@ -56,32 +63,35 @@ class AsmPlugin extends Transform implements Plugin<Project> {
         def startTime = System.currentTimeMillis()
         Collection<TransformInput> inputs = transformInvocation.inputs
         TransformOutputProvider outputProvider = transformInvocation.outputProvider
-        // Delete the previous output of transform
         if (outputProvider != null)
             outputProvider.deleteAll()
-        // Traverse inputs
         inputs.each { TransformInput input ->
-            // Traverse directoryInputs
+            // directoryInputs
             input.directoryInputs.each { DirectoryInput directoryInput ->
+                def preClassNamePath = directoryInput.file.absolutePath
+                createNewClass(preClassNamePath)
                 handleDirectoryInput(directoryInput, outputProvider)
             }
 
-            //Traverse jarInputs
+            // jarInputs
             input.jarInputs.each { JarInput jarInput ->
                 handleJarInputs(jarInput, outputProvider)
             }
         }
         def cost = (System.currentTimeMillis() - startTime) / 1000
         println '--------------- AsmPlugin visit end --------------- '
-        println "ASM Instrumentation cost ： $cost s"
+        println "AsmPLugin cost ： $cost s"
     }
 
+    /**
+     * handle directory class
+     */
     static void handleDirectoryInput(DirectoryInput directoryInput, TransformOutputProvider outputProvider) {
-
         if (directoryInput.file.isDirectory()) {
             directoryInput.file.eachFileRecurse { File file ->
                 def name = file.name
                 if (checkClassFile(name)) {
+                    //println '----------- deal with "class" file <' + name + '> -----------'
                     ClassReader classReader = new ClassReader(file.bytes)
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
                     ClassVisitor cv = new AsmClassVisitor(classWriter)
@@ -94,13 +104,16 @@ class AsmPlugin extends Transform implements Plugin<Project> {
                 }
             }
         }
-        // After processing the input file, the output is sent to the next task
+
         def dest = outputProvider.getContentLocation(directoryInput.name,
                 directoryInput.contentTypes, directoryInput.scopes,
                 Format.DIRECTORY)
         FileUtils.copyDirectory(directoryInput.file, dest)
     }
 
+    /**
+     * handle Jar class
+     */
     static void handleJarInputs(JarInput jarInput, TransformOutputProvider outputProvider) {
         if (jarInput.file.getAbsolutePath().endsWith(".jar")) {
             def jarName = jarInput.name
@@ -121,7 +134,7 @@ class AsmPlugin extends Transform implements Plugin<Project> {
                 ZipEntry zipEntry = new ZipEntry(entryName)
                 InputStream inputStream = jarFile.getInputStream(jarEntry)
                 if (checkClassFile(entryName)) {
-                    // Handling class files
+                    //println '----------- deal with "jar" class file <' + entryName + '> -----------'
                     jarOutputStream.putNextEntry(zipEntry)
                     ClassReader classReader = new ClassReader(IOUtils.toByteArray(inputStream))
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
@@ -135,7 +148,6 @@ class AsmPlugin extends Transform implements Plugin<Project> {
                 }
                 jarOutputStream.closeEntry()
             }
-            // Finish
             jarOutputStream.close()
             jarFile.close()
             def dest = outputProvider.getContentLocation(jarName + md5Name,
@@ -145,10 +157,36 @@ class AsmPlugin extends Transform implements Plugin<Project> {
         }
     }
 
+    /**
+     * check if the class file need to be handled
+     * @param fileName
+     * @return
+     */
     static boolean checkClassFile(String name) {
-        // Process required class files only
         return (name.endsWith(".class") && !name.startsWith("R\$")
-                && !"R.class".equals(name) && !"BuildConfig.class".equals(name) && !name.startsWith("MethodVisitor") && !name.startsWith("RealtimeCoverage") && !name.startsWith("CrashHandler"));
+                && !"R.class".equals(name) && !"BuildConfig.class".equals(name) && !name.startsWith("MethodVisitor") && !name.startsWith("RealtimeCoverage"));
+//                && "android/support/v4/app/FragmentActivity.class".equals(name))
     }
 
+    static void createNewClass(String preClassNamePath) {
+        byte[] code = Utils.generateCrashHandler()
+        FileOutputStream fos = new FileOutputStream(preClassNamePath + File.separator + "CrashHandler.class")
+        fos.write(code)
+        fos.close()
+
+        byte[] code1 = Utils.generateMethodVisitor()
+        FileOutputStream fos1 = new FileOutputStream(preClassNamePath + File.separator + "MethodVisitor.class")
+        fos1.write(code1)
+        fos1.close()
+
+        byte[] code2 = Utils.generateMyTimerTask()
+        FileOutputStream fos2 = new FileOutputStream(preClassNamePath + File.separator + "MyTimerTask.class")
+        fos2.write(code2)
+        fos2.close()
+
+        byte[] code3 = Utils.generateRealtimeCoverage()
+        FileOutputStream fos3 = new FileOutputStream(preClassNamePath + File.separator + "RealtimeCoverage.class")
+        fos3.write(code3)
+        fos3.close()
+    }
 }
